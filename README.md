@@ -1,5 +1,5 @@
 # 42SP---Projects
-Here are my projects from the 42SP foundation track.
+Here are my projects from the 42SP common core.
 
 The projects in the 42 foundation track are divided into 3 phases:
 - Phase 1 - libft | get_next_line | ft_printf | born2beroot | so_long/fdf/fractol | minitalk/pipex
