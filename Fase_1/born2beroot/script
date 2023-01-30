@@ -1,0 +1,13 @@
+#bi
+wall "
+$(uname -a)
+$(lscpu | awk ' NR==5 {print $2}')
+$(lscpu | awk ' NR==9 {print $2}')
+$(free --mega | awk 'NR==2 {printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }')
+$(top -bn 1 | awk 'NR==3 {printf "%.2f%%\n", $4 + $2}')
+$(who -b | awk ' {print ($3 " ",$4 " ",$5)}')
+$(/usr/sbin/lvm pvdisplay | grep Allocatable | awk '{print $2}')
+$(ss -s | grep TCP | awk 'NR==2 {printf "%d ESTABLISHED\n", $3}')
+$(who | wc -l)
+$(hostname -I)$(ip a | grep link/ether | awk '{printf "(%s)\n", $2}')
+$(journalctl _COMM=sudo | grep COMMAND | wc -l)"

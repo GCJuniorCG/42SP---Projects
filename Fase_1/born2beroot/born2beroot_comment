@@ -1,0 +1,444 @@
+___________________________________________________________________________________________________________________________________
+Mandatory Part:
+
+
+____________________________________________________________________________________________________________________________________
+Explain in a simple way:
+
+> How virtual machine works;
+- Virtual machine is a usage environment created by software that simulates a physical computer or server inside another 
+computer, providing the user with the same experience as using a real machine. To create virtual machines on a 
+server requires virtualization software (hypervisor). A virtual machine (VM) is a computing resource that 
+uses software instead of a physical computer to run programs and deploy applications. Each virtual machine runs its own 
+its own operating system and runs separately from other VMs, even when they are all running on the same host. 
+For example, you can run a macOS virtual machine on a physical PC.
+
+> Choice of operating system;
+-Debian - Because as the PDF itself explains Debian is easier to install and configure than CentOS.
+
+> Basic differences between Debian and CentOS;
+- CentOS - Is free and open source. It is enterprise class - meaning it can be used by industries for building 
+of servers, is supported by a large community and is functionally supported by Red Hat. It takes longer to update, because 
+its packages are thoroughly analyzed before homologation and distribution.
+It is the most chosen by large companies.
+-Debian - is an operating system for Unix computers, composed of open source components. It is built and 
+supported by a group of individuals who are under the Debian project. Debian uses Linux as its kernel. Its updates are 
+more frequent, easier to use, and easier to upgrade.
+
+> Purpose of virtual machines;
+- VMs can be deployed to accommodate different levels of processing power needs, to run software that requires an
+operating system or to test applications in a secure, sandboxed environment.
+- VM working with "Virtualization" technology Virtualization uses software to simulate virtual hardware that allows
+VMs to run on a single host machine.
+-Virtual machines can be used for experiments and various types of tests, because it is a controlled environment, 
+once we can restrict its access to the host machine.
+-The technology to create one or more virtual machines within the same hardware is the best answer to optimize the use of 
+equipment that has high processing power but is partially idle. Thus, a single server can 
+host multiple virtual machines on a single piece of hardware, often performing tasks faster than a regular computer.
+Processes that require high processing power on multiple stations, but do not happen continuously, can be clustered 
+and virtualized on a single server. This solution dispenses with unnecessary investments in multiple workstations of high 
+high value workstations, since any computer can access a virtualized environment.
+-The user accessing a VM only has access to its virtual environment. Since several virtual machines, with different operating 
+operating systems can run on a single physical server, each virtual machine gets its own "virtual hardware" that includes 
+CPU, memory, hard disks, storage systems and other devices.
+
+> The difference between aptitude and apt,
+- The syntax of the two is quite similar, but Aptitude is a high-level package manager, where the package searches are much more detailed 
+The syntax of the two is quite similar, however Aptitude is a high level package manager where searches for packages are much more detailed and can suggest possible measures to remove this conflict, and has a graphical version, 
+while APT (Advanced Packaging Tool) is a low-level package manager that can be used by other higher-level 
+managers. Dialog. 
+(read more: https://www.tecmint.com/difference-between-apt-and-aptitude/)
+
+> and what is APPArmor:
+- Show operation:
+$ $ sudo aa-status
+AppArmor ("Application Armor") is a Linux kernel security module that allows the system administrator to restrict
+capabilities with per-program profiles. One more layer.
+(read more: https://en.wikipedia.org/wiki/AppArmor)
+
+> During the defense a script should display all information every 10 minutes.
+- Appear every 10m:
+-----------------------------------------------------------------------------------------------------
+Architecture    : Linux gcamargo42 5.10.0-17-amd64 #1 SMP Debian 5.10.136-1 (2022-08-13) x86_64 GNU/Linux
+Physical CPUs   : 1
+Virtual CPUs    : 1
+Memory Usage    : 251/1024MB (24.51%)
+Disk Usage      : 3GB/29GB (8%)
+CPU Load        : 6.20%
+Last Boot       : Aug  18  13:40
+LVM use         : yes
+TCP Connections : 4 ESTABLISHED
+Users logged    : 3
+Network         : 10.0.2.15 (08:00:27:8a:96:56)
+Sudo            : 197 cmd
+-----------------------------------------------------------------------------------------------------
+
+
+____________________________________________________________________________________________________________________________________
+Simple configuration:
+
+> Make sure the machine does not have a graphical environment at launch;
+- Show in the Linux entry that it has no graphical launch.
+$ type Xorg
+
+> Prompt for password;
+- first it asks for the password to decrypt the virtual hd
+- then prompts for user password to connect to the machine.
+
+> Verify that the UFW has been booted;
+$ sudo ufw status verbose
+
+> Check if SSH is initialized;
+$ sudo systemctl status ssh
+
+> Check if the chosen system is Debian or CentOS.
+$ cat /etc/os-release || $ uname --all
+
+
+____________________________________________________________________________________________________________________________________
+From the user:
+
+> Verify that user gcamargo has been added and belongs to the "sudo" and "user42" groups:
+$ getent group sudo
+$ getent group user42
+
+> Create and connect with a new user;
+$ sudo adduser new_username
+
+> Make sure that the rules imposed in the subject about password policy are 
+implemented:
+$ sudo chage -l your_new_username
+
+> Explain how to configure the rules requested in the subject on your virtual machine.
+Usually there should be one or two modified files:
+- First:
+$ nano /etc/login.defs
+changed the following lines:
+"PASS_MAX_DAYS 30" - number of days you can use the password
+"PASS_MIN_DAYS 2" - minimum days between password changes
+"PASS_WARN_AGE 7" - warning 7 days before the password expires
+- Second:
+$ nano /etc/pam.d/common-password
+changed line:
+" password requisite pam_pwquality.so retry=3 minlen=10 ucredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root"
+retry=3 - maximum number of retries
+minlen=10 - minimum password character size
+ucredit=-1 - at least one capital letter
+dcredit=-1 - at least one number
+maxrepeat=3 - cannot have more than 3 consecutive identical characters
+reject_username - cannot include the user name
+difok=7 - cannot repeat 7 of the characters from the previous password
+enforce_for_root - root must follow the same criteria
+
+> Create group evaluating:
+$ sudo groupadd evaluating
+
+> Add user to evaluating group
+$ sudo usermod -aG evaluating kdaiane-
+
+> Check if you are in the evaluating group:
+$ getent group evaluating
+
+> Finally, ask the evaluated student to explain the advantages of this password policy, as well as the
+advantages and disadvantages of its implementation:
+- Advantages:
+The main one is to curb unauthorized access to services: an attacker can find out the password to your account 
+at the company you work for and discreetly access it to obtain confidential data, for example. 
+- Disadvantages:
+Users often forget passwords due to continuous password changes.
+
+
+____________________________________________________________________________________________________________________________________
+Hostname and partitions:
+
+> Verify that the hostname of the machine is formatted correctly as follows:
+login42 (login of the student being evaluated).
+- Show host:
+$ hostnamectl status
+
+> Modify this hostname by replacing the login with your login and restart the machine.
+If on reboot, the hostname has not been updated, the evaluation stops here.
+- Change Host:
+$ sudo nano /etc/hostname
+$ sudo rebot
+- Show host:
+$ hostnamectl status
+
+> Now you can restore the machine to the original host name:
+- Change Host:
+$ sudo nano /etc/hostname
+$ sudo rebot
+- Show host:
+$ hostnamectl status
+
+> Ask the graded student how to view the partitions of this virtual machine:
+- $ show partitions:
+> Compare the output with the example given in the subject.
+- Compare with the Bonus model
+$ lsblk
+
+> What is LVM and how it works:
+- LVM (Logical Volume Manager) is a method of allocating hard disk space into logical volumes that can be easily 
+resize. The physical volumes are combined into logical volume groups, with the exception of the /boot/ partition.
+To make it more clear imagine two hard disks of 50GB each. In a traditional model each of these disks would have its own 
+its own correct partitions. Let's assume that each disk has a single partition. Applying LVM to these two disks will 
+will group them together and make a single 100GB volume. From this volume you can create logical partitions that can be 
+used by the OS to store data. LVM manages how this data is written to the two disks. LVM logical partitions 
+LVM allows expansion by adding another disk or partition to the group. Resize flexibly. Remove a physical disk or 
+physical partition. This is according to your needs.
+- The big advantage is that you can resize areas dynamically, that is, while the operating system is being
+being used.
+- One disadvantage is that because it is a single virtual disk, data recovery in LVM is more complex in the event of a 
+in the event of a breakdown in the storage system. However, it allows snapshot of the HD.
+
+____________________________________________________________________________________________________________________________________
+SUDO:
+
+> Verify that SUDO is installed correctly;
+- install sudo:
+$ dpkg -l | grep sudo
+or
+$ apt install sudo
+
+> Open your new user in the SUDO group;
+$ sudo adduser username sudo
+Notice it was add on the second-to-last line back!!!
+
+-Show newuser group sudo:
+$ sudo getent group sudo
+
+> Explain what sudo is and its value using examples of your choice;
+- Corresponding to SuperUser Do, the sudo command allows you to perform tasks 
+tasks that require root or administrative permissions. However, it is not very advisable to 
+use it on a daily basis because an error may occur if you do something wrong.
+
+> Check the /var/log/sudo folder and see if there is at least one file;
+$ cd /var/log/sudo/
+$ ls
+$ cd /var/log/sudo/ $ ls
+
+> Run a command via sudo and check if the /var/log/sudo folder has been updated.
+$ sudo cat /var/log/sudo/sudo.log
+
+
+____________________________________________________________________________________________________________________________________
+UFW:
+
+> Verify that UFW is installed;
+$ sudo ufw status verbose
+
+> Verify that the UFW is working;
+$ sudo service ufw status
+
+> Explain what the UFW is and its value;
+- UFW ( Uncomplicated Fire wall ) is, as its name suggests, a simple command line firewall. 
+simple command line firewall. A firewall is a program that monitors and controls 
+data traffic between a local computer and the wider network. It decides whether to 
+allows or blocks traffic according to a set of security rules.
+
+> List the active UFW rules. Must exist on port 4242;
+$ sudo ufw status numbered
+
+> Add a new rule on port 8080;
+$ sudo ufw allow 8080
+
+> Delete port 8080.
+$ sudo ufw status numbered
+$ sudo ufw delete x
+$ sudo ufw delete x
+$ sudo ufw status numbered
+
+
+____________________________________________________________________________________________________________________________________
+SSH:
+
+> Verify that SSH is installed;
+$ sudo systemctl status ssh.service
+
+> Check SSH operation;
+$ sudo systemctl status ssh
+$ sudo service ssh status
+- connect via ssh
+- start via ssh:
+$ ssh usuario@127.0.0.1 -p 4242
+
+> Explain what SSH is and its value;
+- SSH , or Secure Shell, is a network protocol that allows us to connect to 
+a computer remotely over an unsecured network. Thanks to user passwords 
+and the creation of public and private keys, data transmitted from one 
+from one computer to another is encrypted.
+(read more: https://searchsecurity.techtarget.com/definition/Secure-Shell)
+
+> Verify that SSH only uses port 4242;
+$ sudo nano /etc/ssh/sshd_config
+$ grep Port /etc/ssh/ssh/sshd_config
+
+> Log in with the newly configured user;
+$ ssh user42@127.0.0.1 -p 4242
+$ wall "ssh test"
+
+> Use a simple key or password;
+- Connect with user password
+
+> Do not use the user as root.
+$ ssh root@127.0.0.1 -p 4242
+
+
+____________________________________________________________________________________________________________________________________
+Script Monitormanto:
+
+> Explain how the script works by showing the code;
+how it works:
+
+Opening the script:
+$ sudo nano /usr/local/bin/monitoring.sh
+
+Cmando wall prints messages on all machines logged on to the server.
+$ wall "message"
+
+- Explaining the script:
+*Architecture of the vurtual machine - $(uname -a)"
+- uname -a fetches the virtual machine data:
+$ uname -a
+
+*Physical processors - $(lscpu | awk ' NR==5 {print $2}')"
+-lscpu lists CPUs - NR 5 lists physicals and prints the 2nd item:
+$ lscpu
+
+*Virtual processors - $(lscpu | awk ' NR==9 {print $2}')"
+-lscpu lists CPUs - NR9 lists virtual and print the 2nd item:
+$ lscpu
+
+*Free ram memory / total / % - $(free --mega | awk 'NR==2 {printf "%s/%sMB (%.2f%%%)\n", $3,$2,$3*100/$2 }')"
+-free --mega - NR2 takes the line from the memories, and
+	prints 3.item (used) and 2.item (total), then 3.item*100/2.item:
+
+*HD used / Disp / % - $(df --total --block-size=GB | grep 'total' | awk '{printf("%dGB/%dGB (%d%%%)", $3, $2, $5)}')"
+-df --total --block-size=GB - command gets HD total - grep selects lines with the word total
+	prints: 3.item (used), 2.item (total) and 5.item (percent used)
+$ df --total --block-size=GB | grep total
+
+*Percentage of processing used - $(top -bn 1 | awk 'NR==3 {printf "%.2f%%%\n", $4 + $2})')"
+-top -bn 1 - prints out the machine's Processing, at NR3 it takes data 2. and 4. item:
+$ top -bn 1
+
+*Last booted machine - $(who -b | awk ' {print ($3 " ",$4 " ",$5)}')')"
+-$ who -b - shows the last boot and we print items 3, 4 and 5:
+$ who -b
+
+*LVM active - $(/usr/sbin/lvm pvdisplay | grep Allocatable | awk '{print $2}')"
+- Logical Volume Management - use pvdisplay command, grep Allocatable and print the 2.item:
+$ sudo pvdisplay | grep Allocatable
+
+*TCP Connections - $(ss -s | grep TCP | awk 'NR==2 {printf "%d ESTABLISHED", $3})"
+-check the TCP connections with the ss -s command and grep on TCP and print the 3. item from the second (Established) appearance:
+$ ss -s | grep TCP
+
+*Total users connected - $(who | wc -l)"
+-who displays the connected users and wc -l displays the quantities:
+$ who | wc -l
+
+*IP / MAC of virtual machine - $(hostname -I)$(ip a | grep link/ether | awk '{printf "(%s)\n", $2}')"
+-hostname -I - prints the machine's IP, ip a displays the machine's configuration of ips and network interfaces, grep link/ether
+	and print the 2.item:
+$ hostname -I
+$ ip a | grep link/ether
+
+*Number of times used SUDO command - $(journalctl _COMM=sudo | grep COMMAND | wc -l)"
+
+- Using journalctl _COMM=sudo it fetches all the times that the SUDO command appears, with a grep COMMAND we filter the appearances 
+of the word COMMAND and with wc -l we list the sum of them:
+-- journalctl collects data from all available sources and stores it in a binary format for easy and dynamic manipulation.
+$ sudo journalctl _COMM=sudo | grep COMMAND | wc -l
+
+> Explain what CRON is;
+- Cron: Linux task manager that allows you to execute commands at a specific 
+at a given time. We can automate some tasks just by telling 
+cron which command we want to run at a specific time. For example, 
+and we want to restart our server every day at 4:00 AM, instead of 
+instead of having to wake up at that time, cron will do it for us.
+
+> Since the script has been configured to run every 10 minutes from server startup;
+$ sudo crontab -u root -l
+*/10 * * * * /
+*/m h d m ds
+minute
+hour
+day
+month
+day of the week
+
+> Then change it to run every 1 minute;
+$ sudo crontab -e 
+and change the line to */1 * * * /
+
+> Turn off Cron so that it stops running at server startup, without deleting the script.
+$ sudo crontab -e 
+- and comment out the line: */1 * * * / exit and save.
+
+
+____________________________________________________________________________________________________________________________________
+Bonus Part:
+
+____________________________________________________________________________________________________________________________________
+> Mount partitions - worth 2 points.
+$ lsblk
+
+
+____________________________________________________________________________________________________________________________________
+> Set up WordPress with only the services required by the subject - worth 2 points.
+.installed PHP with:
+$ sudo apt install curl
+$ sudo curl -sSL https://packages.sury.org/php/README.txt | sudo bash -x
+$ sudo apt install php8.1
+$ sudo apt install php-common php-cgi php-cli php-mysql
+.how php installs apache:
+$ systemctl status apache2
+$ sudo apt purge apache2
+.we install LIGHTTPD with:
+$ sudo apt install lighttpd
+.install MARIADB with:
+$ sudo apt install mariadb-server
+Then install WordPress
+#(If necessary) Start mariadb:
+#$ sudo systemctl start mariadb
+#-(If necessary) Start lighttpd:
+#$ sudo systemctl start lighttpd
+#
+-show WD site in browser:
+http://127.0.0.1:8080
+#
+
+
+____________________________________________________________________________________________________________________________________
+> Free choice service - worth 2 points.
+Installed fail2ban:
+- Fail2ban is a solution for preventing brute force attacks. It performs the analysis of logs (syslog) and then performs 
+some actions such as creating rules in the firewall and sending alerts to system administrators.
+$ sudo nano /etc/fail2ban/jail.conf
+- As a server administrator, I prefer to better adjust these settings, making the attack on these machines more difficult, 
+using the following settings:
+.The attacker is banned for 1 hour when performing an attack: bantime = 5m
+The analysis time counter resets every 3 minutes: findtime = m
+Maximum number of attempts a user can make before being banned: maxretry = 3
+- Check usage:
+$ sudo nano /etc/fail2ban/jail.d/defaults-debian.conf
+- Check for attacks:
+$ sudo tail -f /var/log/syslog
+Check when Fail2ban bans and 'unban' an attacker:
+$ sudo tail -f /var/log/fail2ban.log
+-Verify bans:
+$ sudo fail2ban-client status
+
+-Unblocking IP:
+-To locate IP:
+$ sudo tail -f /var/log/fail2ban.log
+-Unbanning the IP:
+Let's use the set unbanip command of fail2ban to unblock the IP:
+$ sudo fail2ban-client set sshd unbanip 10.0.2.2
+
+
+For the bonus the student should give a brief explanation of how it works and why he finds it useful.
+*/
+
+____________________________________________________________________________________________________________________________________

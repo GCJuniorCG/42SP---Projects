@@ -1,0 +1,31 @@
+wall"
+-----------------------------------------------------------------------------------------------------
+#Architecture    : (uname -a)
+#Physical CPUs   : (lscpu | awk ' NR==5 {print $2}')
+#Virtual CPUs    : (lscpu | awk ' NR==9 {print $2}')
+#Memory Usage    : (free --mega | awk 'NR==2 {printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }')
+#Disk Usage      : (df --total --block-size=GB | grep 'total' | awk '{printf("%dGB/%dGB (%d%%)", $3, $2, $5)}')
+#CPU Load        : (top -bn 1 | awk 'NR==3 {printf "%.2f%%\n", $4 + $2}')
+#Last Boot       : (who -b | awk ' {print ($3 " ",$4 " ",$5)}')
+#LVM use         : (/usr/sbin/lvm pvdisplay | grep Allocatable | awk '{print $2}')
+#TCP Connections : (ss -s | grep TCP | awk 'NR==2 {printf "%d ESTABLISHED\n", $3}')
+#Users logged    : (who | wc -l)
+#Network         : (hostname -I)$(ip a | grep link/ether | awk '{printf "(%s)\n", $2}')
+#Sudo            : (journalctl _COMM=sudo | grep COMMAND | wc -l)
+-----------------------------------------------------------------------------------------------------"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"
