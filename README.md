@@ -2,7 +2,7 @@
 Here are my projects from the 42SP common core.
 
 The projects in the 42 foundation track are divided into 3 phases:
-- Phase 1 - libft | get_next_line | ft_printf | born2beroot | so_long | minitalk/pipex
+- Phase 1 - libft | get_next_line | ft_printf | born2beroot | so_long | minitalk;
 - Phase 2 - push_swap | minishell | philosophers| netpractice | cub3d/minirt;
 - Phase 3 - cpp | ft_containers | inception | webserv/ft_irc | ft_transcendence.
 
